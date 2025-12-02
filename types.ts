@@ -1,7 +1,6 @@
 export interface NavItem {
   label: string;
   id: string;
-  jpLabel?: string;
 }
 
 export interface Project {
