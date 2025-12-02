@@ -1,67 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Aesthetixtudio</title>
-    <meta name="description" content="Premium UI/UX and Web Development Micro-Studio" />
-    
-    <!-- Fonts: Space Grotesk (Headings) and Inter (Body) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              display: ['Space Grotesk', 'sans-serif'],
-              jp: ['Noto Sans JP', 'sans-serif'],
-            },
-            colors: {
-              studio: {
-                base: '#F6F7FB',
-                dark: '#1A1A1C',
-                gray: '#4A4A52',
-                light: '#E8EAF0',
-                blue: '#2153F6',
-                yellow: '#FFC93C',
-                red: '#EB3A2C',
-                mint: '#54E0C5',
-                lavender: '#A38BFF',
-              }
-            },
-            spacing: {
-              '128': '32rem',
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aesthetixtudio - Web Design & Development in Hyderabad</title>
+  <meta name="description"
+    content="Premium UI/UX Design and Web Development Studio in Falaknuma, Hyderabad, India. We build aesthetic, high-performance websites for brands." />
+  <meta name="keywords"
+    content="Web Design Hyderabad, UI/UX Design Falaknuma, Web Development India, Aesthetixstudio, Premium Websites, Digital Studio Hyderabad" />
+
+  <!-- Geo Tags -->
+  <meta name="geo.region" content="IN-TG" />
+  <meta name="geo.placename" content="Hyderabad" />
+  <meta name="geo.position" content="17.3317;78.4667" />
+  <meta name="ICBM" content="17.3317, 78.4667" />
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:;">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Aesthetixstudio",
+    "image": "https://aesthetixstudio.com/logo.png",
+    "description": "Premium UI/UX Design and Web Development Studio in Falaknuma, Hyderabad.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Falaknuma",
+      "addressLocality": "Hyderabad",
+      "addressRegion": "Telangana",
+      "postalCode": "500053",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 17.3317,
+      "longitude": 78.4667
+    },
+    "url": "https://aesthetixstudio.com",
+    "telephone": "+910000000000",
+    "priceRange": "$$"
+  }
+  </script>
+
+  <!-- Fonts: Space Grotesk (Headings) and Inter (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            jp: ['Noto Sans JP', 'sans-serif'],
+          },
+          colors: {
+            studio: {
+              base: '#F6F7FB',
+              dark: '#1A1A1C',
+              gray: '#4A4A52',
+              light: '#E8EAF0',
+              blue: '#2153F6',
+              yellow: '#FFC93C',
+              red: '#EB3A2C',
+              mint: '#54E0C5',
+              lavender: '#A38BFF',
             }
+          },
+          spacing: {
+            '128': '32rem',
           }
         }
       }
-    </script>
-    <style>
-      /* Custom Scrollbar for that premium feel */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #F6F7FB; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #CED2DE; 
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #2153F6; 
-      }
-      
-      .writing-vertical {
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-      }
-    </style>
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar for that premium feel */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #F6F7FB;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #CED2DE;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2153F6;
+    }
+
+    .writing-vertical {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -71,10 +117,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-[#F6F7FB] text-[#1A1A1C] antialiased selection:bg-[#2153F6] selection:text-white">
-    <div id="root"></div>
+
+<body class="bg-[#F6F7FB] text-[#1A1A1C] antialiased selection:bg-[#2153F6] selection:text-white">
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

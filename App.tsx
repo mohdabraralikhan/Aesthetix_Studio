@@ -18,7 +18,7 @@ const PROJECTS: Project[] = [
     title: 'Minimal SaaS Dashboard',
     category: 'Analytics UI',
     year: '2025',
-    image: 'https://picsum.photos/800/600?random=10',
+    image: '/images/project-saas-dashboard.png',
     color: 'bg-studio-blue',
     size: 'large'
   },
@@ -27,7 +27,7 @@ const PROJECTS: Project[] = [
     title: 'Creative Agency Website',
     category: 'Editorial Design',
     year: '2024',
-    image: 'https://picsum.photos/600/800?random=11',
+    image: '/images/project-creative-agency.png',
     color: 'bg-studio-red',
     size: 'tall'
   },
@@ -36,7 +36,7 @@ const PROJECTS: Project[] = [
     title: 'E-Commerce Product Page',
     category: 'Retail Experience',
     year: '2024',
-    image: 'https://picsum.photos/800/600?random=12',
+    image: '/images/project-ecommerce.png',
     color: 'bg-studio-mint',
     size: 'normal'
   },
@@ -45,7 +45,7 @@ const PROJECTS: Project[] = [
     title: 'Business Consulting Platform',
     category: 'Corporate Identity',
     year: '2024',
-    image: 'https://picsum.photos/800/800?random=13',
+    image: '/images/project-consulting.png',
     color: 'bg-studio-yellow',
     size: 'normal'
   },
@@ -187,7 +187,7 @@ const Navigation: React.FC<{ activeSection: string; onNavigate: (id: string) => 
 
 const Hero: React.FC<{ onNavigate: (id: string) => void }> = ({ onNavigate }) => {
   return (
-    <section id={SectionId.HERO} className="relative min-h-screen pt-20 lg:pt-0 grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-studio-base">
+    <section id={SectionId.HERO} className="relative min-h-screen pt-20 lg:pt-24 grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-studio-base">
 
       {/* Decorative Grid Lines */}
       <div className="absolute inset-0 pointer-events-none grid grid-cols-1 lg:grid-cols-12 gap-0 z-0">
@@ -236,9 +236,10 @@ const Hero: React.FC<{ onNavigate: (id: string) => void }> = ({ onNavigate }) =>
       {/* Right Visual */}
       <div className="lg:col-span-5 relative bg-gray-100 min-h-[50vh] lg:min-h-screen border-l border-gray-200">
         <img
-          src="https://picsum.photos/1000/1200?grayscale&blur=2"
+          src="/images/hero.png"
           alt="Abstract Architectural Form"
           className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-70"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-studio-base/20"></div>
 
@@ -360,7 +361,8 @@ const Work: React.FC = () => {
               <img
                 src={project.image}
                 alt={project.title}
-                className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                className={`w-full h-full ${project.id === 4 ? 'object-contain' : 'object-cover'} transition-transform duration-1000 ease-out group-hover:scale-105`}
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500"></div>
 
@@ -433,9 +435,10 @@ const About: React.FC = () => {
         <div className="lg:col-span-6 relative h-full min-h-[400px]">
           <div className="absolute inset-0 bg-gray-200">
             <img
-              src="https://picsum.photos/800/800?grayscale&blur=1"
+              src="/images/about.png"
               alt="Studio Atmosphere"
               className="w-full h-full object-cover"
+              loading="lazy"
             />
           </div>
           <div className="absolute -bottom-8 -left-8 bg-white p-8 shadow-xl max-w-xs hidden md:block">
@@ -450,6 +453,77 @@ const About: React.FC = () => {
 };
 
 const Contact: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    projectType: 'Website Design & Dev',
+    budget: '₹1k - ₹5k',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+
+    if (!accessKey) {
+      alert('Web3Forms Access Key is missing. Please check your environment variables.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          name: formData.name,
+          email: formData.email,
+          subject: `New Project Inquiry: ${formData.projectType}`,
+          message: `
+Project Type: ${formData.projectType}
+Budget: ${formData.budget}
+
+Message:
+${formData.message}
+          `,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('Thank you! Your message has been sent successfully.');
+        setFormData({
+          name: '',
+          email: '',
+          projectType: 'Website Design & Dev',
+          budget: '₹1k - ₹5k',
+          message: ''
+        });
+      } else {
+        console.error('Web3Forms Error:', result);
+        alert('Failed to send message. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Submission Error:', error);
+      alert('An error occurred. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section id={SectionId.CONTACT} className="py-24 lg:py-32 px-6 lg:px-20 bg-white">
       <div className="max-w-5xl mx-auto">
@@ -459,18 +533,39 @@ const Contact: React.FC = () => {
           <p className="text-gray-500 text-lg font-light">Let’s build something aesthetic, functional, and meaningful.</p>
         </div>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12" onSubmit={(e) => e.preventDefault()}>
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-2 group">
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Name</label>
-            <input type="text" className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300" placeholder="Your Name" />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300"
+              placeholder="Your Name"
+              required
+            />
           </div>
           <div className="flex flex-col gap-2 group">
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Email</label>
-            <input type="email" className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300" placeholder="email@address.com" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300"
+              placeholder="email@address.com"
+              required
+            />
           </div>
           <div className="flex flex-col gap-2 group">
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Project Type</label>
-            <select className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700">
+            <select
+              name="projectType"
+              value={formData.projectType}
+              onChange={handleChange}
+              className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700"
+            >
               <option>Website Design & Dev</option>
               <option>UI/UX Design</option>
               <option>Brand Identity</option>
@@ -479,15 +574,28 @@ const Contact: React.FC = () => {
           </div>
           <div className="flex flex-col gap-2 group">
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Budget</label>
-            <select className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700">
-              <option>$1k - $5k</option>
-              <option>$5k - $10k</option>
-              <option>$10k+</option>
+            <select
+              name="budget"
+              value={formData.budget}
+              onChange={handleChange}
+              className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700"
+            >
+              <option>₹1k - ₹5k</option>
+              <option>₹5k - ₹10k</option>
+              <option>₹10k+</option>
             </select>
           </div>
           <div className="md:col-span-2 flex flex-col gap-2 group">
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Message</label>
-            <textarea rows={3} className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300 resize-none" placeholder="Tell us about your goals..."></textarea>
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              rows={3}
+              className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300 resize-none"
+              placeholder="Tell us about your goals..."
+              required
+            ></textarea>
           </div>
 
           <div className="md:col-span-2 flex flex-col md:flex-row justify-between items-center mt-8 gap-6">
@@ -495,8 +603,12 @@ const Contact: React.FC = () => {
               <Star className="w-4 h-4 text-studio-yellow" />
               <span>Response within 24–48 hours</span>
             </div>
-            <button type="submit" className="w-full md:w-auto bg-studio-dark text-white px-12 py-5 uppercase tracking-widest text-xs font-medium hover:bg-studio-blue transition-colors duration-300">
-              Submit Inquiry
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full md:w-auto bg-studio-dark text-white px-12 py-5 uppercase tracking-widest text-xs font-medium hover:bg-studio-blue transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? 'Sending...' : 'Submit Inquiry'}
             </button>
           </div>
         </form>
@@ -548,7 +660,7 @@ const Footer: React.FC = () => {
 
       <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400 font-mono uppercase tracking-wide">
         <span>© 2025 Aesthetixstudio. All Rights Reserved.</span>
-        <span>Tokyo / New York</span>
+        <span>Falaknuma, Hyderabad, India</span>
       </div>
     </footer>
   );
