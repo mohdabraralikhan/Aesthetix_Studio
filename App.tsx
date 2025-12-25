@@ -236,7 +236,7 @@ const Hero: React.FC<{ onNavigate: (id: string) => void }> = ({ onNavigate }) =>
       {/* Right Visual */}
       <div className="lg:col-span-5 relative bg-gray-100 min-h-[50vh] lg:min-h-screen border-l border-gray-200">
         <img
-          src="/images/hero.png"
+          src="/images/hero.webp"
           alt="Abstract Architectural Form"
           className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-70"
           loading="lazy"
@@ -435,7 +435,7 @@ const About: React.FC = () => {
         <div className="lg:col-span-6 relative h-full min-h-[400px]">
           <div className="absolute inset-0 bg-gray-200">
             <img
-              src="/images/about.png"
+              src="/images/about.webp"
               alt="Studio Atmosphere"
               className="w-full h-full object-cover"
               loading="lazy"
