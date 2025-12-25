@@ -156,7 +156,11 @@ const Navigation: React.FC<{ activeSection: string; onNavigate: (id: string) => 
           </div>
 
           {/* Mobile Menu Toggle */}
-          <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
+          <button
+            className="lg:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle Menu"
+          >
             {isOpen ? <X /> : <Menu />}
           </button>
         </div>
@@ -237,9 +241,11 @@ const Hero: React.FC<{ onNavigate: (id: string) => void }> = ({ onNavigate }) =>
       <div className="lg:col-span-5 relative bg-gray-100 min-h-[50vh] lg:min-h-screen border-l border-gray-200">
         <img
           src="/images/hero.webp"
+          srcSet="/images/hero-mobile.webp 800w, /images/hero.webp 1920w"
+          sizes="(max-width: 1024px) 100vw, 50vw"
           alt="Abstract Architectural Form"
           className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-70"
-          loading="lazy"
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-studio-base/20"></div>
 
@@ -539,6 +545,7 @@ ${formData.message}
             <input
               type="text"
               name="name"
+              aria-label="Your Name"
               value={formData.name}
               onChange={handleChange}
               className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300"
@@ -551,6 +558,7 @@ ${formData.message}
             <input
               type="email"
               name="email"
+              aria-label="Your Email"
               value={formData.email}
               onChange={handleChange}
               className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300"
@@ -562,6 +570,7 @@ ${formData.message}
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Project Type</label>
             <select
               name="projectType"
+              aria-label="Project Type"
               value={formData.projectType}
               onChange={handleChange}
               className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700"
@@ -576,6 +585,7 @@ ${formData.message}
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Budget</label>
             <select
               name="budget"
+              aria-label="Budget Range"
               value={formData.budget}
               onChange={handleChange}
               className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700"
@@ -589,6 +599,7 @@ ${formData.message}
             <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Message</label>
             <textarea
               name="message"
+              aria-label="Your Message"
               value={formData.message}
               onChange={handleChange}
               rows={3}
