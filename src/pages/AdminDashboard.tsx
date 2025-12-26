@@ -5,8 +5,8 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 
 const AdminDashboard: React.FC = () => {
-    const client = generateClient<Schema>({ authMode: 'userPool' });
-    const [messages, setMessages] = useState<Schema['Inquiry']['type'][]>([]);
+    // Do not generate client at module render — create it inside async ops so missing Amplify config doesn't throw.
+    const [messages, setMessages] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,7 +16,27 @@ const AdminDashboard: React.FC = () => {
     const fetchMessages = async () => {
         try {
             setLoading(true);
-            const { data: items } = await client.models.Inquiry.list({});
+            let clientInstance: any;
+            try {
+                clientInstance = generateClient<Schema>({ authMode: 'userPool' });
+            } catch (err) {
+                console.error('Could not generate Amplify client:', err);
+                setMessages([]);
+                return;
+            }
+
+            let InquiryModel: any;
+            try {
+                InquiryModel = clientInstance.models.Inquiry;
+            } catch (err) {
+                console.error('Inquiry model not available:', err);
+                setMessages([]);
+                return;
+            }
+
+            const result = await InquiryModel.list({});
+            // Some clients return { data } shape, others return array directly — normalize:
+            const items = result?.data ?? result ?? [];
             setMessages(items);
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -28,7 +48,23 @@ const AdminDashboard: React.FC = () => {
     const deleteMessage = async (id: string) => {
         if (!confirm('Are you sure you want to delete this message?')) return;
         try {
-            await client.models.Inquiry.delete({ id });
+            let clientInstance: any;
+            try {
+                clientInstance = generateClient<Schema>({ authMode: 'userPool' });
+            } catch (err) {
+                console.error('Could not generate Amplify client:', err);
+                return;
+            }
+
+            let InquiryModel: any;
+            try {
+                InquiryModel = clientInstance.models.Inquiry;
+            } catch (err) {
+                console.error('Inquiry model not available:', err);
+                return;
+            }
+
+            await InquiryModel.delete({ id });
             setMessages(prev => prev.filter(m => m.id !== id));
         } catch (error) {
             console.error('Error deleting message:', error);
