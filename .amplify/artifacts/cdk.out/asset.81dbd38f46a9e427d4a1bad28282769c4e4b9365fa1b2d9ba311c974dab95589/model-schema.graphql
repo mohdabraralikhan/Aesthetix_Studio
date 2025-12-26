@@ -1,0 +1,11 @@
+type Inquiry @model @auth(rules: [{allow: public, provider: apiKey},
+  {allow: public, provider: iam},
+  {allow: private}])
+{
+  name: String!
+  email: String!
+  projectType: String
+  message: String!
+  status: String
+  admin: [String]
+}

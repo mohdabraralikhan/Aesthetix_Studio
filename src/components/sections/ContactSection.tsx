@@ -9,57 +9,68 @@ interface ContactSectionProps {
 }
 
 const ContactSection: React.FC<ContactSectionProps> = ({ isFullPage = false }) => {
-    const client = generateClient<Schema>();
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        projectType: 'Website Design & Dev',
-        budget: '₹1k - ₹5k',
-        message: ''
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        try {
-            // Check if backend is configured (models will be missing if sandbox hasn't run)
-            if (!client.models || !client.models.Inquiry) {
-                throw new Error("Form submission is currently unavailable. Please ensure the backend is synced (npx ampx sandbox).");
-            }
-
-            await client.models.Inquiry.create({
-                name: formData.name,
-                email: formData.email,
-                projectType: formData.projectType,
-                message: formData.message,
-                status: ['NEW']
-            });
-
-            alert('Thank you! Your message has been sent successfully.');
-            setFormData({
-                name: '',
-                email: '',
-                projectType: 'Website Design & Dev',
-                budget: '₹1k - ₹5k',
-                message: ''
-            });
-        } catch (error: any) {
-            console.error('Submission Error:', error);
-            const message = error.message || 'An error occurred. Please try again later.';
-            alert(message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
+     const navigate = useNavigate();
+     const [formData, setFormData] = useState({
+         name: '',
+         email: '',
+         projectType: 'Website Design & Dev',
+         budget: '₹1k - ₹5k',
+         message: ''
+     });
+     const [isSubmitting, setIsSubmitting] = useState(false);
+ 
+     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+         const { name, value } = e.target;
+         setFormData(prev => ({ ...prev, [name]: value }));
+     };
+ 
+     const handleSubmit = async (e: React.FormEvent) => {
+         e.preventDefault();
+         setIsSubmitting(true);
+ 
+         try {
+             // Generate client at submit time and guard model access.
+             let clientInstance: any;
+             try {
+                 clientInstance = generateClient<Schema>();
+             } catch (err) {
+                 throw new Error("Form submission is currently unavailable. Please ensure Amplify is configured (npx ampx sandbox).");
+             }
+ 
+             let InquiryModel: any;
+             try {
+                 // Accessing clientInstance.models may throw if provider/config missing, so wrap it.
+                 InquiryModel = clientInstance.models.Inquiry;
+             } catch (err) {
+                 throw new Error("Form submission is currently unavailable. Backend models are not ready.");
+             }
+ 
+             // status is a string (not an array) in the data schema — send "NEW"
+             await InquiryModel.create({
+                 name: formData.name,
+                 email: formData.email,
+                 projectType: formData.projectType,
+                 message: formData.message,
+                 status: 'NEW'
+             });
+ 
+             alert('Thank you! Your message has been sent successfully.');
+             setFormData({
+                 name: '',
+                 email: '',
+                 projectType: 'Website Design & Dev',
+                 budget: '₹1k - ₹5k',
+                 message: ''
+             });
+         } catch (error: any) {
+             console.error('Submission Error:', error);
+             const message = error.message || 'An error occurred. Please try again later.';
+             alert(message);
+         } finally {
+             setIsSubmitting(false);
+         }
+     };
+ 
     return (
         <section id="contact" className={`py-24 lg:py-32 px-6 lg:px-20 bg-white ${isFullPage ? 'min-h-screen' : ''}`}>
             <div className="max-w-4xl mx-auto">

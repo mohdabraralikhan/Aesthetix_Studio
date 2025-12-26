@@ -35,7 +35,8 @@ const Navigation: React.FC<NavigationProps> = ({ navItems }) => {
                 <div className="flex items-center justify-between px-6 py-4 lg:px-12 lg:py-5">
                     <div
                         className="flex items-center gap-2 cursor-pointer group"
-                        onClick={() => navigate('/home')}
+                        // Navigate to root '/' so it matches routing and isHomePage detection
+                        onClick={() => navigate('/')}
                     >
                         <div className="w-4 h-4 bg-studio-blue transform group-hover:rotate-45 transition-transform duration-300"></div>
                         <span className="font-display font-bold text-xl tracking-tight uppercase">Aesthetix<span className="font-light">studio</span></span>

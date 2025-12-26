@@ -80,7 +80,6 @@ const Home: React.FC = () => {
                         sizes="(max-width: 1024px) 100vw, 50vw"
                         alt="Abstract Architectural Form"
                         className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-70"
-                        fetchPriority="high"
                     />
                     <div className="absolute inset-0 bg-studio-base/20"></div>
 

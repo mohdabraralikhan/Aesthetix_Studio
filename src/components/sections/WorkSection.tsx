@@ -71,12 +71,13 @@ const WorkSection: React.FC<WorkSectionProps> = ({ showViewAll = true, isFullPag
     const navigate = useNavigate();
     const [activeFilter, setActiveFilter] = useState('All');
 
+    // Use case-insensitive substring match so categories like "Analytics UI — Glassmorphism UI" match "Analytics UI"
     const filteredProjects = activeFilter === 'All'
         ? PROJECTS
-        : PROJECTS.filter(p => p.category === activeFilter);
+        : PROJECTS.filter(p => p.category.toLowerCase().includes(activeFilter.toLowerCase()));
 
-    // On home page, only show the first 4 projects
-    const displayedProjects = isFullPage ? filteredProjects : PROJECTS.slice(0, 4);
+    // On home page, only show the first 4 projects from the filtered list
+    const displayedProjects = isFullPage ? filteredProjects : filteredProjects.slice(0, 4);
 
     return (
         <section id="work" className={`py-24 lg:py-32 bg-white ${isFullPage ? 'min-h-screen' : ''}`}>
