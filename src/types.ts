@@ -1,6 +1,7 @@
 export interface NavItem {
   label: string;
   id: string;
+  path: string;
 }
 
 export interface Project {
