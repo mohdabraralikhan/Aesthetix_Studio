@@ -20,7 +20,7 @@ const schema = a.schema({
         .model({
             name: a.string().required(),
             description: a.string(),
-            status: a.enum(['Planning', 'In Progress', 'In Review', 'Completed']),
+            status: a.enum(['Planning', 'InProgress', 'InReview', 'Completed']),
             ownerId: a.string().required(),
             tasks: a.hasMany('Task', 'projectId'),
             teamMembers: a.string().array(),
@@ -41,7 +41,7 @@ const schema = a.schema({
             description: a.string(),
             assignee: a.string().required(),
             priority: a.enum(['Low', 'Medium', 'High']),
-            status: a.enum(['To Do', 'In Progress', 'In Review', 'Completed']),
+            status: a.enum(['ToDo', 'InProgress', 'InReview', 'Completed']),
             dueDate: a.date().required(),
             projectId: a.id().required(),
             project: a.belongsTo('Project', 'projectId'),
