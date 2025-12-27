@@ -1,13 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { generateClient } from 'aws-amplify/api';
+import type { Schema } from '../../amplify/data/resource';
+
+const TASK_STATUSES = {
+  TODO: 'ToDo',
+  IN_PROGRESS: 'InProgress',
+  IN_REVIEW: 'InReview',
+  COMPLETED: 'Completed',
+} as const;
 
 interface Project {
   id: string;
   name: string;
   description: string;
-  status: 'Planning' | 'In Progress' | 'In Review' | 'Completed';
-  team: string[];
-  dueDate: string;
-  progress: number;
+  status: string;
+  ownerId: string;
+  teamMembers?: string[];
+  budget?: number;
+  hourlyRate?: number;
+  currencyCode?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface Task {
@@ -15,89 +28,114 @@ interface Task {
   projectId: string;
   title: string;
   assignee: string;
-  status: 'To Do' | 'In Progress' | 'Review' | 'Done';
+  status: typeof TASK_STATUSES[keyof typeof TASK_STATUSES];
   priority: 'Low' | 'Medium' | 'High';
   dueDate: string;
+  description?: string;
+  estimatedHours?: number;
+  hourlyRate?: number;
+  timeLogged?: number;
 }
 
 const Dashboard: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: '1',
-      name: 'Website Redesign',
-      description: 'Complete redesign of the main website',
-      status: 'In Progress',
-      team: ['Alex', 'Sarah'],
-      dueDate: '2025-02-15',
-      progress: 65
-    },
-    {
-      id: '2',
-      name: 'Mobile App Development',
-      description: 'Native mobile application for iOS and Android',
-      status: 'Planning',
-      team: ['John', 'Mike', 'Lisa'],
-      dueDate: '2025-03-30',
-      progress: 20
-    },
-    {
-      id: '3',
-      name: 'Design System',
-      description: 'Comprehensive design tokens and components',
-      status: 'In Review',
-      team: ['Emma'],
-      dueDate: '2025-01-31',
-      progress: 90
-    }
-  ]);
+  const client = generateClient<Schema>();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      projectId: '1',
-      title: 'Design homepage layouts',
-      assignee: 'Alex',
-      status: 'Done',
-      priority: 'High',
-      dueDate: '2025-01-15'
-    },
-    {
-      id: '2',
-      projectId: '1',
-      title: 'Implement navigation component',
-      assignee: 'Sarah',
-      status: 'In Progress',
-      priority: 'High',
-      dueDate: '2025-01-20'
-    },
-    {
-      id: '3',
-      projectId: '2',
-      title: 'Define app architecture',
-      assignee: 'John',
-      status: 'To Do',
-      priority: 'High',
-      dueDate: '2025-01-25'
-    }
-  ]);
+  // Load data from Amplify
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        
+        // Load projects and tasks in parallel
+        const [projectsResult, tasksResult] = await Promise.all([
+          client.models.Project.list(),
+          client.models.Task.list()
+        ]);
+        
+        setProjects(projectsResult.data as Project[]);
+        setTasks(tasksResult.data as Task[]);
+      } catch (err) {
+        setError('Failed to load dashboard data');
+        console.error('Dashboard data loading error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
+
+  // Calculate dashboard stats
+  const stats = {
+    activeProjects: projects.length,
+    totalTasks: tasks.length,
+    completedTasks: tasks.filter(t => t.status === TASK_STATUSES.COMPLETED).length,
+    teamMembers: new Set(tasks.map(t => t.assignee)).size,
+    completionRate: tasks.length > 0 ? Math.round((tasks.filter(t => t.status === TASK_STATUSES.COMPLETED).length / tasks.length) * 100) : 0
+  };
+
+  // Task distribution
+  const taskDistribution = {
+    [TASK_STATUSES.TODO]: tasks.filter(t => t.status === TASK_STATUSES.TODO).length,
+    [TASK_STATUSES.IN_PROGRESS]: tasks.filter(t => t.status === TASK_STATUSES.IN_PROGRESS).length,
+    [TASK_STATUSES.IN_REVIEW]: tasks.filter(t => t.status === TASK_STATUSES.IN_REVIEW).length,
+    [TASK_STATUSES.COMPLETED]: tasks.filter(t => t.status === TASK_STATUSES.COMPLETED).length,
+  };
+
+  // Project progress calculation
+  const getProjectProgress = (projectId: string) => {
+    const projectTasks = tasks.filter(t => t.projectId === projectId);
+    if (projectTasks.length === 0) return 0;
+    const completedTasks = projectTasks.filter(t => t.status === TASK_STATUSES.COMPLETED).length;
+    return Math.round((completedTasks / projectTasks.length) * 100);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case TASK_STATUSES.COMPLETED:
       case 'Completed':
-      case 'Done':
         return 'text-green-600';
-      case 'In Progress':
+      case TASK_STATUSES.IN_PROGRESS:
+      case 'InProgress':
         return 'text-studio-blue';
-      case 'In Review':
-      case 'Review':
+      case TASK_STATUSES.IN_REVIEW:
+      case 'InReview':
         return 'text-yellow-600';
+      case TASK_STATUSES.TODO:
       case 'Planning':
-      case 'To Do':
         return 'text-gray-500';
       default:
         return 'text-gray-500';
     }
   };
+
+  const formatStatus = (status: string) => {
+    return status.replace(/([A-Z])/g, ' $1').trim();
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-gray-500">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-red-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -124,23 +162,23 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
         <div className="bg-white p-6 border border-gray-100 shadow-sm">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Active Projects</p>
-          <p className="text-3xl font-display font-medium">3</p>
-          <p className="text-xs text-gray-400 mt-2">+1 this month</p>
+          <p className="text-3xl font-display font-medium">{stats.activeProjects}</p>
+          <p className="text-xs text-gray-400 mt-2">Total projects</p>
         </div>
         <div className="bg-white p-6 border border-gray-100 shadow-sm">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Total Tasks</p>
-          <p className="text-3xl font-display font-medium">47</p>
-          <p className="text-xs text-gray-400 mt-2">12 completed</p>
+          <p className="text-3xl font-display font-medium">{stats.totalTasks}</p>
+          <p className="text-xs text-gray-400 mt-2">{stats.completedTasks} completed</p>
         </div>
         <div className="bg-white p-6 border border-gray-100 shadow-sm">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Team Members</p>
-          <p className="text-3xl font-display font-medium">8</p>
-          <p className="text-xs text-gray-400 mt-2">All active</p>
+          <p className="text-3xl font-display font-medium">{stats.teamMembers}</p>
+          <p className="text-xs text-gray-400 mt-2">Active assignees</p>
         </div>
         <div className="bg-white p-6 border border-gray-100 shadow-sm">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Completion Rate</p>
-          <p className="text-3xl font-display font-medium">78%</p>
-          <p className="text-xs text-gray-400 mt-2">This quarter</p>
+          <p className="text-3xl font-display font-medium">{stats.completionRate}%</p>
+          <p className="text-xs text-gray-400 mt-2">Overall progress</p>
         </div>
       </div>
 
@@ -153,37 +191,37 @@ const Dashboard: React.FC = () => {
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm text-gray-700">To Do</span>
-                <span className="text-sm font-medium">12</span>
+                <span className="text-sm font-medium">{taskDistribution[TASK_STATUSES.TODO]}</span>
               </div>
               <div className="w-full h-2 bg-gray-100">
-                <div className="h-2 bg-red-500" style={{ width: '25%' }} />
+                <div className="h-2 bg-red-500" style={{ width: `${stats.totalTasks > 0 ? (taskDistribution[TASK_STATUSES.TODO] / stats.totalTasks) * 100 : 0}%` }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm text-gray-700">In Progress</span>
-                <span className="text-sm font-medium">18</span>
+                <span className="text-sm font-medium">{taskDistribution[TASK_STATUSES.IN_PROGRESS]}</span>
               </div>
               <div className="w-full h-2 bg-gray-100">
-                <div className="h-2 bg-yellow-500" style={{ width: '38%' }} />
+                <div className="h-2 bg-yellow-500" style={{ width: `${stats.totalTasks > 0 ? (taskDistribution[TASK_STATUSES.IN_PROGRESS] / stats.totalTasks) * 100 : 0}%` }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm text-gray-700">In Review</span>
-                <span className="text-sm font-medium">9</span>
+                <span className="text-sm font-medium">{taskDistribution[TASK_STATUSES.IN_REVIEW]}</span>
               </div>
               <div className="w-full h-2 bg-gray-100">
-                <div className="h-2 bg-blue-500" style={{ width: '19%' }} />
+                <div className="h-2 bg-blue-500" style={{ width: `${stats.totalTasks > 0 ? (taskDistribution[TASK_STATUSES.IN_REVIEW] / stats.totalTasks) * 100 : 0}%` }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm text-gray-700">Completed</span>
-                <span className="text-sm font-medium">8</span>
+                <span className="text-sm font-medium">{taskDistribution[TASK_STATUSES.COMPLETED]}</span>
               </div>
               <div className="w-full h-2 bg-gray-100">
-                <div className="h-2 bg-green-500" style={{ width: '17%' }} />
+                <div className="h-2 bg-green-500" style={{ width: `${stats.totalTasks > 0 ? (taskDistribution[TASK_STATUSES.COMPLETED] / stats.totalTasks) * 100 : 0}%` }} />
               </div>
             </div>
           </div>
@@ -193,33 +231,23 @@ const Dashboard: React.FC = () => {
         <div className="bg-white p-8 border border-gray-100 shadow-sm">
           <h3 className="font-display font-medium mb-6">Project Progress</h3>
           <div className="space-y-6">
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm text-gray-700">Website Redesign</span>
-                <span className="text-sm font-medium">65%</span>
-              </div>
-              <div className="w-full h-2 bg-gray-100">
-                <div className="h-2 bg-studio-blue" style={{ width: '65%' }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm text-gray-700">Mobile App</span>
-                <span className="text-sm font-medium">20%</span>
-              </div>
-              <div className="w-full h-2 bg-gray-100">
-                <div className="h-2 bg-studio-blue" style={{ width: '20%' }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm text-gray-700">Design System</span>
-                <span className="text-sm font-medium">90%</span>
-              </div>
-              <div className="w-full h-2 bg-gray-100">
-                <div className="h-2 bg-studio-blue" style={{ width: '90%' }} />
-              </div>
-            </div>
+            {projects.slice(0, 3).map((project) => {
+              const progress = getProjectProgress(project.id);
+              return (
+                <div key={project.id}>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm text-gray-700">{project.name}</span>
+                    <span className="text-sm font-medium">{progress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-100">
+                    <div className="h-2 bg-studio-blue" style={{ width: `${progress}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+            {projects.length === 0 && (
+              <p className="text-gray-500 text-sm">No projects available</p>
+            )}
           </div>
         </div>
       </div>
@@ -232,47 +260,60 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="grid gap-6">
-          {projects.map((project) => (
-            <div key={project.id} className="bg-white p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-xl font-medium mb-2">{project.name}</h3>
-                  <p className="text-gray-500 text-sm font-light">{project.description}</p>
-                </div>
-                <span className={`text-xs font-medium uppercase tracking-widest ${getStatusColor(project.status)}`}>
-                  {project.status}
-                </span>
-              </div>
-
-              <div className="space-y-6">
-                {/* Progress Bar */}
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-xs text-gray-500 uppercase tracking-widest">Progress</span>
-                    <span className="text-xs font-medium text-gray-700">{project.progress}%</span>
+          {projects.map((project) => {
+            const progress = getProjectProgress(project.id);
+            const projectTasks = tasks.filter(t => t.projectId === project.id);
+            return (
+              <div key={project.id} className="bg-white p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-xl font-medium mb-2">{project.name}</h3>
+                    <p className="text-gray-500 text-sm font-light">{project.description}</p>
                   </div>
-                  <div className="w-full h-1 bg-gray-100">
-                    <div
-                      className="h-1 bg-studio-blue transition-all"
-                      style={{ width: `${project.progress}%` }}
-                    />
-                  </div>
+                  <span className={`text-xs font-medium uppercase tracking-widest ${getStatusColor(project.status)}`}>
+                    {formatStatus(project.status)}
+                  </span>
                 </div>
 
-                {/* Meta Info */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-4 border-t border-gray-100">
+                <div className="space-y-6">
+                  {/* Progress Bar */}
                   <div>
-                    <span className="text-xs text-gray-500 uppercase tracking-widest block mb-1">Team</span>
-                    <span className="text-sm text-gray-700">{project.team.join(', ')}</span>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-xs text-gray-500 uppercase tracking-widest">Progress</span>
+                      <span className="text-xs font-medium text-gray-700">{progress}%</span>
+                    </div>
+                    <div className="w-full h-1 bg-gray-100">
+                      <div
+                        className="h-1 bg-studio-blue transition-all"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-xs text-gray-500 uppercase tracking-widest block mb-1">Due Date</span>
-                    <span className="text-sm text-gray-700">{new Date(project.dueDate).toLocaleDateString()}</span>
+
+                  {/* Meta Info */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-4 border-t border-gray-100">
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-widest block mb-1">Team</span>
+                      <span className="text-sm text-gray-700">{project.teamMembers?.join(', ') || 'No team assigned'}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-widest block mb-1">Tasks</span>
+                      <span className="text-sm text-gray-700">{projectTasks.length} total</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-widest block mb-1">Budget</span>
+                      <span className="text-sm text-gray-700">{project.currencyCode || 'USD'} {project.budget?.toFixed(2) || '0.00'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
+            );
+          })}
+          {projects.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No projects available</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -284,14 +325,15 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="grid gap-4">
-          {tasks.map((task) => (
+          {tasks.slice(0, 10).map((task) => (
             <div key={task.id} className="bg-white p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between gap-6">
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-800 mb-2">{task.title}</h4>
                   <div className="flex gap-4 text-xs text-gray-500">
                     <span>Assigned to: {task.assignee}</span>
-                    <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+                    <span>Due: {new Date(task.dueDate + 'T00:00:00').toLocaleDateString()}</span>
+                    {task.estimatedHours && <span>Est: {task.estimatedHours}h</span>}
                   </div>
                 </div>
 
@@ -300,12 +342,17 @@ const Dashboard: React.FC = () => {
                     {task.priority}
                   </span>
                   <span className={`text-xs font-medium uppercase tracking-widest ${getStatusColor(task.status)}`}>
-                    {task.status}
+                    {formatStatus(task.status)}
                   </span>
                 </div>
               </div>
             </div>
           ))}
+          {tasks.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No tasks available</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

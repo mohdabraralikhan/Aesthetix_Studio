@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { generateClient } from 'aws-amplify/api';
+import type { Schema } from '../../amplify/data/resource';
 
 interface TeamMember {
   id: string;
@@ -11,60 +13,64 @@ interface TeamMember {
 }
 
 const TeamManagement: React.FC = () => {
-  const [members, setMembers] = useState<TeamMember[]>([
-    {
-      id: '1',
-      name: 'Alex Johnson',
-      email: 'alex@studio.com',
-      role: 'Designer',
-      assignedProjects: ['Website Redesign', 'Design System'],
-      assignedTasks: ['Design homepage layouts', 'Create component library'],
-      joinDate: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Sarah Chen',
-      email: 'sarah@studio.com',
-      role: 'Developer',
-      assignedProjects: ['Website Redesign'],
-      assignedTasks: ['Implement navigation component', 'Setup build pipeline'],
-      joinDate: '2024-02-01'
-    },
-    {
-      id: '3',
-      name: 'John Smith',
-      email: 'john@studio.com',
-      role: 'Developer',
-      assignedProjects: ['Mobile App Development'],
-      assignedTasks: ['Define app architecture'],
-      joinDate: '2024-01-20'
-    },
-    {
-      id: '4',
-      name: 'Emma Davis',
-      email: 'emma@studio.com',
-      role: 'Project Manager',
-      assignedProjects: ['Design System'],
-      assignedTasks: [],
-      joinDate: '2023-12-10'
-    },
-    {
-      id: '5',
-      name: 'Mike Wilson',
-      email: 'mike@studio.com',
-      role: 'Developer',
-      assignedProjects: ['Mobile App Development'],
-      assignedTasks: ['API integration', 'Database design'],
-      joinDate: '2024-03-01'
-    }
-  ]);
-
+  const client = generateClient<Schema>();
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     role: 'Developer' as const
   });
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [projectsResult, tasksResult] = await Promise.all([
+        client.models.Project.list(),
+        client.models.Task.list()
+      ]);
+      
+      setProjects(projectsResult.data || []);
+      setTasks(tasksResult.data || []);
+      
+      // Generate team members from unique assignees
+      const uniqueAssignees = new Set<string>();
+      (tasksResult.data || []).forEach((task: any) => {
+        if (task.assignee) uniqueAssignees.add(task.assignee);
+      });
+      
+      const teamMembers: TeamMember[] = Array.from(uniqueAssignees).map((assignee, index) => {
+        const memberTasks = (tasksResult.data || []).filter((task: any) => task.assignee === assignee);
+        const memberProjectIds = [...new Set(memberTasks.map((task: any) => task.projectId))];
+        const memberProjects = (projectsResult.data || []).filter((project: any) => 
+          memberProjectIds.includes(project.id)
+        ).map((project: any) => project.name);
+        
+        return {
+          id: `member-${index}`,
+          name: assignee,
+          email: `${assignee.toLowerCase().replace(/\s+/g, '.')}@studio.com`,
+          role: index === 0 ? 'Lead' : ['Designer', 'Developer', 'Project Manager'][index % 3] as any,
+          assignedProjects: memberProjects,
+          assignedTasks: memberTasks.map((task: any) => task.title),
+          joinDate: new Date().toISOString().split('T')[0]
+        };
+      });
+      
+      setMembers(teamMembers);
+    } catch (err) {
+      console.error('Error loading team data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,10 +91,19 @@ const TeamManagement: React.FC = () => {
   };
 
   const handleRemoveMember = (id: string) => {
-    if (confirm('Are you sure you want to remove this member?')) {
-      setMembers(members.filter(m => m.id !== id));
-    }
+    if (typeof window !== 'undefined' && !window.confirm('Are you sure you want to remove this member?')) return;
+    setMembers(members.filter(m => m.id !== id));
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-gray-500">Loading team data...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getRoleColor = (role: string) => {
     switch (role) {

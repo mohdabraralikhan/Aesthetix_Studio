@@ -1,55 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { generateClient } from 'aws-amplify/api';
+import type { Schema } from '../../amplify/data/resource';
 
 interface Message {
   id: string;
   name: string;
   email: string;
-  projectType: string;
+  projectType?: string;
   message: string;
   status?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 const AdminMessages: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      name: 'Client A',
-      email: 'client@example.com',
-      projectType: 'Website',
-      message: 'We need a website redesign for our upcoming product launch',
-      status: 'New',
-      createdAt: '2025-01-20'
-    },
-    {
-      id: '2',
-      name: 'Client B',
-      email: 'contact@clientb.com',
-      projectType: 'App',
-      message: 'Looking for mobile app development services',
-      createdAt: '2025-01-19'
-    },
-    {
-      id: '3',
-      name: 'Client C',
-      email: 'hello@clientc.com',
-      projectType: 'Design',
-      message: 'Need UI/UX design for our SaaS platform',
-      createdAt: '2025-01-18'
-    }
-  ]);
+  const client = generateClient<Schema>();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>('1');
-  const selectedMessage = messages.find(m => m.id === selectedMessageId);
+  useEffect(() => {
+    loadMessages();
+  }, []);
 
-  const handleDeleteMessage = (id: string) => {
-    if (confirm('Delete this message?')) {
-      setMessages(messages.filter(m => m.id !== id));
-      if (selectedMessageId === id) {
-        setSelectedMessageId(messages.length > 1 ? messages[0].id : null);
+  const loadMessages = async () => {
+    try {
+      setLoading(true);
+      const result = await client.models.Inquiry.list();
+      const inquiries = result.data as Message[];
+      setMessages(inquiries);
+      if (inquiries.length > 0 && !selectedMessageId) {
+        setSelectedMessageId(inquiries[0].id);
       }
+    } catch (err) {
+      setError('Failed to load messages');
+      console.error('Error loading messages:', err);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleDeleteMessage = async (id: string) => {
+    if (typeof window !== 'undefined' && !window.confirm('Delete this message?')) return;
+    
+    try {
+      await client.models.Inquiry.delete({ id });
+      setMessages(messages.filter(m => m.id !== id));
+      if (selectedMessageId === id) {
+        const remainingMessages = messages.filter(m => m.id !== id);
+        setSelectedMessageId(remainingMessages.length > 0 ? remainingMessages[0].id : null);
+      }
+    } catch (err) {
+      console.error('Error deleting message:', err);
+    }
+  };
+
+  const selectedMessage = messages.find(m => m.id === selectedMessageId);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-gray-500">Loading messages...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-6 h-[calc(100vh-120px)]">
@@ -70,7 +92,7 @@ const AdminMessages: React.FC = () => {
               <div className="font-medium text-sm text-gray-800">{msg.name}</div>
               <div className="text-xs text-gray-500 mt-1 truncate">{msg.email}</div>
               <div className="text-xs text-gray-400 mt-1">
-                {new Date(msg.createdAt).toLocaleDateString()}
+                {msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'No date'}
               </div>
             </button>
           ))}
@@ -98,7 +120,7 @@ const AdminMessages: React.FC = () => {
 
             <div className="pb-8 border-b border-gray-100">
               <span className="inline-block text-xs font-mono uppercase tracking-widest text-gray-500 mb-4">
-                {selectedMessage.projectType}
+                {selectedMessage.projectType || 'General Inquiry'}
               </span>
               <p className="text-gray-600 font-light leading-relaxed whitespace-pre-wrap">
                 {selectedMessage.message}
@@ -107,12 +129,16 @@ const AdminMessages: React.FC = () => {
 
             <div className="mt-8 pt-8 flex justify-between items-center">
               <span className="text-xs text-gray-400 font-mono">
-                {new Date(selectedMessage.createdAt).toLocaleDateString()}
+                {selectedMessage.createdAt ? new Date(selectedMessage.createdAt).toLocaleDateString() : 'No date'}
               </span>
               <button className="px-6 py-2 bg-studio-dark text-white text-sm hover:bg-gray-800 transition-colors">
                 Reply
               </button>
             </div>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-400">No messages available</p>
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">
