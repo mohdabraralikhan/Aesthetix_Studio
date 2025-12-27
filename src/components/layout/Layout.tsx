@@ -15,6 +15,7 @@ export const NAV_ITEMS: NavItem[] = [
 
 const Layout: React.FC = () => {
     const { pathname } = useLocation();
+    const isAdmin = pathname.startsWith('/admin');
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -22,12 +23,12 @@ const Layout: React.FC = () => {
 
     return (
         <div className="antialiased selection:bg-studio-blue selection:text-white bg-studio-base min-h-screen flex flex-col">
-            <Navigation navItems={NAV_ITEMS} />
-            <main className="flex-grow pt-20 lg:pt-24">
-                <Breadcrumbs />
+            {!isAdmin && <Navigation navItems={NAV_ITEMS} />}
+            <main className={`flex-grow ${isAdmin ? '' : 'pt-20 lg:pt-24'}`}>
+                {!isAdmin && <Breadcrumbs />}
                 <Outlet />
             </main>
-            <Footer navItems={NAV_ITEMS} />
+            {!isAdmin && <Footer navItems={NAV_ITEMS} />}
         </div>
     );
 };

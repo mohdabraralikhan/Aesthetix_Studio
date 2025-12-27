@@ -79,6 +79,8 @@ const Home: React.FC = () => {
                         srcSet="/images/hero-mobile.webp 800w, /images/hero.webp 1920w"
                         sizes="(max-width: 1024px) 100vw, 50vw"
                         alt="Abstract Architectural Form"
+                        loading="eager"
+                        decoding="async"
                         className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-70"
                     />
                     <div className="absolute inset-0 bg-studio-base/20"></div>

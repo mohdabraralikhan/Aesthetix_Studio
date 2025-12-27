@@ -121,8 +121,9 @@ const WorkSection: React.FC<WorkSectionProps> = ({ showViewAll = true, isFullPag
                             <img
                                 src={project.image}
                                 alt={project.title}
-                                className={`w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110`}
                                 loading="lazy"
+                                decoding="async"
+                                className={`w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110`}
                             />
                             <div className="absolute inset-0 bg-studio-dark/0 group-hover:bg-studio-dark/40 transition-colors duration-500"></div>
 

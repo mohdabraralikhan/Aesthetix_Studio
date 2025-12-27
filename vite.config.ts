@@ -8,8 +8,28 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      middlewareMode: false,
+      hmr: true,
     },
-    plugins: [react()],
+    build: {
+      target: 'esnext',
+      minify: 'esbuild',
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor': ['react', 'react-dom', 'react-router-dom'],
+            'ui': ['@aws-amplify/ui-react'],
+            'amplify': ['aws-amplify', '@aws-amplify/backend'],
+          }
+        }
+      }
+    },
+    plugins: [
+      react({
+        jsxRuntime: 'automatic',
+      })
+    ],
     define: {
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
@@ -18,6 +38,9 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(__dirname, './src'),
       }
+    },
+    esbuild: {
+      logOverride: { 'this-is-undefined-in-esm': 'silent' }
     }
   };
 });

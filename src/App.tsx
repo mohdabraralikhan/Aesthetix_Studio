@@ -8,8 +8,19 @@ import Services from './pages/Services';
 import Process from './pages/Process';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import AdminDashboard from './pages/AdminDashboard';
 import Dashboard from './pages/Dashboard';
+import TeamManagement from './pages/TeamManagement';
+import Projects from './pages/Projects';
+import AdminMessages from './pages/AdminMessages';
+import Activities from './pages/Activities';
+import Backlog from './pages/Backlog';
+import MyTasks from './pages/MyTasks';
+import Reports from './pages/Reports';
+import Roadmap from './pages/Roadmap';
+import ClientPortal from './pages/ClientPortal';
+import PDFExport from './pages/PDFExport';
+import NotFound from './pages/NotFound';
+import AdminLayout from './components/admin/AdminLayout';
 
 const App: React.FC = () => {
   return (
@@ -25,7 +36,21 @@ const App: React.FC = () => {
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="admin" element={<AdminDashboard />} />
+            <Route path="client-portal" element={<ClientPortal />} />
+            <Route path="export-reports" element={<PDFExport />} />
+            <Route path="admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="team" element={<TeamManagement />} />
+              <Route path="projects" element={<Projects />} />
+              <Route path="messages" element={<AdminMessages />} />
+              <Route path="activities" element={<Activities />} />
+              <Route path="backlog" element={<Backlog />} />
+              <Route path="my-tasks" element={<MyTasks />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="roadmap" element={<Roadmap />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>

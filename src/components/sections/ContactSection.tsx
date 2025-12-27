@@ -86,36 +86,41 @@ const ContactSection: React.FC<ContactSectionProps> = ({ isFullPage = false }) =
                 {/* Simplified Centered Form */}
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12 mb-20" onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-2 group">
-                        <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Name</label>
+                        <label htmlFor="name" className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Name *</label>
                         <input
+                            id="name"
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300"
+                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue focus:ring-studio-blue/20 focus:ring-2 transition-all bg-transparent placeholder-gray-300"
                             placeholder="Your Name"
                             required
+                            aria-required="true"
                         />
                     </div>
                     <div className="flex flex-col gap-2 group">
-                        <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Email</label>
+                        <label htmlFor="email" className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Email *</label>
                         <input
+                            id="email"
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300"
+                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue focus:ring-studio-blue/20 focus:ring-2 transition-all bg-transparent placeholder-gray-300"
                             placeholder="email@address.com"
                             required
+                            aria-required="true"
                         />
                     </div>
                     <div className="flex flex-col gap-2 group">
-                        <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Project Type</label>
+                        <label htmlFor="projectType" className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Project Type</label>
                         <select
+                            id="projectType"
                             name="projectType"
                             value={formData.projectType}
                             onChange={handleChange}
-                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700"
+                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue focus:ring-studio-blue/20 focus:ring-2 transition-all bg-transparent text-gray-700"
                         >
                             <option>Website Design & Dev</option>
                             <option>UI/UX Design</option>
@@ -124,12 +129,13 @@ const ContactSection: React.FC<ContactSectionProps> = ({ isFullPage = false }) =
                         </select>
                     </div>
                     <div className="flex flex-col gap-2 group">
-                        <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Budget</label>
+                        <label htmlFor="budget" className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Budget</label>
                         <select
+                            id="budget"
                             name="budget"
                             value={formData.budget}
                             onChange={handleChange}
-                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent text-gray-700"
+                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue focus:ring-studio-blue/20 focus:ring-2 transition-all bg-transparent text-gray-700"
                         >
                             <option>₹1k - ₹5k</option>
                             <option>₹5k - ₹10k</option>
@@ -137,27 +143,29 @@ const ContactSection: React.FC<ContactSectionProps> = ({ isFullPage = false }) =
                         </select>
                     </div>
                     <div className="md:col-span-2 flex flex-col gap-2 group">
-                        <label className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Message</label>
+                        <label htmlFor="message" className="text-xs font-mono uppercase tracking-widest text-gray-400 group-focus-within:text-studio-blue transition-colors">Message *</label>
                         <textarea
+                            id="message"
                             name="message"
                             value={formData.message}
                             onChange={handleChange}
-                            rows={3}
-                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue transition-colors bg-transparent placeholder-gray-300 resize-none"
+                            rows={4}
+                            className="w-full border-b border-gray-200 py-3 text-lg focus:outline-none focus:border-studio-blue focus:ring-studio-blue/20 focus:ring-2 transition-all bg-transparent placeholder-gray-300 resize-none"
                             placeholder="Tell us about your goals..."
                             required
+                            aria-required="true"
                         ></textarea>
                     </div>
 
-                    <div className="md:col-span-2 flex flex-col md:flex-row justify-between items-center mt-8 gap-6">
+                    <div className="md:col-span-2 flex flex-col md:flex-row justify-between items-start md:items-center mt-8 gap-6">
                         <div className="flex items-center gap-2 text-xs text-gray-400 uppercase tracking-wide">
-                            <Star className="w-4 h-4 text-studio-yellow" />
+                            <Star className="w-4 h-4 text-studio-yellow flex-shrink-0" />
                             <span>Response within 24–48 hours</span>
                         </div>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full md:w-auto bg-studio-dark text-white px-12 py-5 uppercase tracking-widest text-xs font-medium hover:bg-studio-blue transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full md:w-auto bg-studio-dark text-white px-12 py-3 uppercase tracking-widest text-xs font-medium hover:bg-studio-blue active:scale-95 focus:outline-none focus:ring-2 focus:ring-studio-blue focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isSubmitting ? 'Sending...' : 'Submit Inquiry'}
                         </button>

@@ -36,16 +36,12 @@ const Footer: React.FC<FooterProps> = ({ navItems }) => {
                     <div>
                         <h4 className="font-mono text-xs uppercase tracking-widest text-gray-400 mb-6">Legal</h4>
                         <ul className="space-y-3 text-sm font-medium text-studio-dark">
+                            <li><a href="/sitemap.xml" className="hover:text-studio-blue transition-colors">Sitemap</a></li>
                             <li><a href="#" className="hover:text-studio-blue transition-colors">Privacy Policy</a></li>
                             <li><a href="#" className="hover:text-studio-blue transition-colors">Terms</a></li>
                         </ul>
                     </div>
-                    <div>
-                        <h4 className="font-mono text-xs uppercase tracking-widest text-gray-400 mb-6">Studio</h4>
-                        <ul className="space-y-3 text-sm font-medium text-studio-dark">
-                            <li><NavLink to="/admin" className="hover:text-studio-blue transition-colors">Admin Login</NavLink></li>
-                        </ul>
-                    </div>
+
                     <div>
                         <h4 className="font-mono text-xs uppercase tracking-widest text-gray-400 mb-6">Connect</h4>
                         <ul className="space-y-3 text-sm font-medium text-studio-dark">

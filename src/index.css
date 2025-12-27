@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* System fonts for better performance */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Better focus visible styles for accessibility */
+:focus-visible {
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
 /* Custom Scrollbar for that premium feel */
 ::-webkit-scrollbar {
   width: 8px;
@@ -13,13 +34,44 @@
 
 ::-webkit-scrollbar-thumb {
   background: #CED2DE;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #2153F6;
 }
 
+/* Image optimization */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .writing-vertical {
   writing-mode: vertical-rl;
   text-orientation: mixed;
+}
+
+/* Selection color for better UX */
+::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #3b82f6;
+  color: white;
 }

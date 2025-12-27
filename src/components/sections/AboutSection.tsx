@@ -59,8 +59,9 @@ const AboutSection: React.FC<AboutSectionProps> = ({ isFullPage = false }) => {
                         <img
                             src="/images/about.webp"
                             alt="Studio Atmosphere"
-                            className="w-full h-full object-cover"
                             loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover"
                         />
                     </div>
                     <div className="absolute -bottom-8 -left-8 bg-white p-8 shadow-xl max-w-xs hidden md:block">
