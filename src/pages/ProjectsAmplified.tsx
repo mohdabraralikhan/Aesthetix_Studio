@@ -1,7 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 import type { Schema } from '../../amplify/data/resource';
+
+const TASK_STATUSES = {
+  TODO: 'ToDo',
+  IN_PROGRESS: 'InProgress',
+  IN_REVIEW: 'InReview',
+  COMPLETED: 'Completed',
+} as const;
+
 
 // Extend interfaces with file attachments and role-based features
 interface Comment {
@@ -35,7 +43,7 @@ interface Task {
   costAllocated?: number;
   dependencies?: string[];
   phase?: string;
-  status: 'To Do' | 'In Progress' | 'In Review' | 'Completed';
+  status: typeof TASK_STATUSES[keyof typeof TASK_STATUSES];
 }
 
 interface Project {
@@ -149,15 +157,15 @@ const ProjectsAmplified: React.FC = () => {
         
         const tasksList = result.data || [];
         const grouped: Record<string, Task[]> = {
-          'To Do': [],
-          'In Progress': [],
-          'In Review': [],
-          'Completed': [],
+          [TASK_STATUSES.TODO]: [],
+          [TASK_STATUSES.IN_PROGRESS]: [],
+          [TASK_STATUSES.IN_REVIEW]: [],
+          [TASK_STATUSES.COMPLETED]: [],
         };
 
         tasksList.forEach(task => {
           const status = task.status as keyof typeof grouped;
-          grouped[status]?.push(task as Task);
+          grouped[status]?.push(task as unknown as Task);
         });
 
         setTasks(prev => ({
@@ -190,7 +198,7 @@ const ProjectsAmplified: React.FC = () => {
     e.preventDefault();
   };
 
-  const handleDrop = async (toStatus: string) => {
+  const handleDrop = async (toStatus: typeof TASK_STATUSES[keyof typeof TASK_STATUSES]) => {
     if (!draggedTask || currentUser?.role !== 'Lead') return;
     const { task, fromStatus } = draggedTask;
 
@@ -203,7 +211,7 @@ const ProjectsAmplified: React.FC = () => {
       // Update in Amplify
       await client.models.Task.update({
         id: task.id,
-        status: toStatus as 'To Do' | 'In Progress' | 'In Review' | 'Completed',
+        status: toStatus as any,
       });
 
       // Update local state
@@ -212,7 +220,7 @@ const ProjectsAmplified: React.FC = () => {
         [selectedProjectId]: {
           ...prev[selectedProjectId],
           [fromStatus]: prev[selectedProjectId][fromStatus].filter(t => t.id !== task.id),
-          [toStatus]: [...prev[selectedProjectId][toStatus], { ...task, status: toStatus as any }],
+          [toStatus]: [...prev[selectedProjectId][toStatus], { ...task, status: toStatus }],
         },
       }));
 
@@ -237,7 +245,7 @@ const ProjectsAmplified: React.FC = () => {
   };
 
   const handleBulkDelete = async () => {
-    if (selectedTasks.size === 0 || !confirm(`Delete ${selectedTasks.size} task(s)?`)) return;
+    if (selectedTasks.size === 0 || (typeof window !== 'undefined' && !window.confirm(`Delete ${selectedTasks.size} task(s)?`))) return;
     
     if (currentUser?.role !== 'Lead') {
       addNotification('Only Leads can delete tasks', 'error');
@@ -313,22 +321,24 @@ const ProjectsAmplified: React.FC = () => {
     try {
       const task = await client.models.Task.create({
         title: newTaskData.title,
-        description: newTaskData.description,
+        description: newTaskData.description || undefined,
         assignee: newTaskData.assignee,
-        priority: newTaskData.priority as 'Low' | 'Medium' | 'High',
-        status: 'To Do',
+        priority: newTaskData.priority,
+        status: 'ToDo' as any,
         dueDate: newTaskData.dueDate,
+        estimatedHours: newTaskData.estimatedHours,
+        hourlyRate: newTaskData.hourlyRate,
         projectId: selectedProjectId,
       });
 
       const newTask: Task = {
-        id: (task as any).id,
-        title: (task as any).title || '',
-        description: (task as any).description,
-        assignee: (task as any).assignee || '',
-        priority: (task as any).priority as 'Low' | 'Medium' | 'High',
-        status: 'To Do',
-        dueDate: (task as any).dueDate || '',
+        id: task.data?.id || '',
+        title: task.data?.title || '',
+        description: task.data?.description || '',
+        assignee: task.data?.assignee || '',
+        priority: (task.data?.priority as 'Low' | 'Medium' | 'High') || 'Medium',
+        status: TASK_STATUSES.TODO,
+        dueDate: task.data?.dueDate || '',
         comments: [],
         attachments: [],
       };
@@ -337,7 +347,7 @@ const ProjectsAmplified: React.FC = () => {
         ...prev,
         [selectedProjectId]: {
           ...prev[selectedProjectId],
-          'To Do': [...(prev[selectedProjectId]['To Do'] || []), newTask],
+          [TASK_STATUSES.TODO]: [...(prev[selectedProjectId][TASK_STATUSES.TODO] || []), newTask],
         },
       }));
 
@@ -419,7 +429,10 @@ const ProjectsAmplified: React.FC = () => {
     return { status: 'safe', percentage };
   };
 
-  const isOverdue = (dueDate: string) => new Date(dueDate) < new Date();
+  const formatStatus = (status: Task['status']) =>
+    status.replace(/([A-Z])/g, ' $1').trim();
+
+  const isOverdue = (dueDate: string) => new Date(dueDate + 'T00:00:00') < new Date();
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -430,15 +443,15 @@ const ProjectsAmplified: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Completed': return 'text-green-600';
-      case 'In Progress': return 'text-blue-600';
-      case 'In Review': return 'text-yellow-600';
-      case 'To Do': return 'text-gray-500';
-      default: return 'text-gray-500';
-    }
-  };
+ const getStatusColor = (status: Task['status']) => {
+  switch (status) {
+    case 'Completed': return 'text-green-600';
+    case 'InProgress': return 'text-blue-600';
+    case 'InReview': return 'text-yellow-600';
+    case 'ToDo': return 'text-gray-500';
+  }
+};
+
 
   const filteredTasks = (status: string): Task[] => {
     const statusTasks = (tasks[selectedProjectId]?.[status] as Task[]) || [];
@@ -494,7 +507,12 @@ const ProjectsAmplified: React.FC = () => {
   };
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
-  const projectTasks = tasks[selectedProjectId] || { 'To Do': [], 'In Progress': [], 'In Review': [], 'Completed': [] };
+  const projectTasks = tasks[selectedProjectId] || { 
+    ToDo: [],
+    InProgress: [],
+    InReview: [],
+    Completed: [],
+  };
   const selectedTask = (Object.values(projectTasks) as Task[][])
     .flat()
     .find(t => t.id === selectedTaskId) as Task | undefined;
@@ -690,7 +708,7 @@ const ProjectsAmplified: React.FC = () => {
           <>
             {selectedProject ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pb-6">
-                {['To Do', 'In Progress', 'In Review', 'Completed'].map((status) => (
+                {Object.values(TASK_STATUSES).map((status) => (
                   <div
                     key={status}
                     className="bg-gray-50 p-4 border border-gray-200 min-h-[600px]"
