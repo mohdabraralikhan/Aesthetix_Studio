@@ -14,13 +14,11 @@ export default defineConfig(({ mode }) => {
     build: {
       target: 'esnext',
       minify: 'esbuild',
-      sourcemap: false,
       rollupOptions: {
         output: {
           manualChunks: {
             'vendor': ['react', 'react-dom', 'react-router-dom'],
-            'ui': ['@aws-amplify/ui-react'],
-            'amplify': ['aws-amplify', '@aws-amplify/backend'],
+            'amplify-bundle': ['aws-amplify', '@aws-amplify/ui-react', '@aws-amplify/backend']
           }
         }
       }
@@ -37,6 +35,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        './runtimeConfig': './runtimeConfig.browser',
       }
     },
     esbuild: {
