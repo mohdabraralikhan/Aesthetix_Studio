@@ -129,8 +129,8 @@ async function renderDashboard() {
                 </div>
             </nav>
 
-            <main class="container mx-auto px-6 py-12 max-w-7xl">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
+            <main class="container mx-auto px-6 lg:px-12 py-16 max-w-7xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 gap-6">
                     <div>
                         <span class="text-studio-blue font-mono text-xs uppercase tracking-widest mb-2 block">Inbox Overview</span>
                         <h1 class="font-display text-4xl font-medium text-studio-dark">Client Inquiries</h1>
@@ -159,7 +159,7 @@ async function renderDashboard() {
                                     <th class="p-6 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="inquiries-body" class="text-sm divide-y divide-gray-50">
+                            <tbody id="inquiries-body" class="text-sm divide-y divide-gray-50 bg-white">
                                 </tbody>
                         </table>
                     </div>
@@ -218,28 +218,28 @@ async function fetchInquiries() {
         }
 
         tbody.innerHTML = data.map(item => `
-            <tr class="group hover:bg-blue-50/30 transition-colors ${item.status === 'NEW' ? 'bg-blue-50/10' : ''}">
-                <td class="p-6 align-top font-mono text-xs">
-                    ${new Date(item.created_at).toLocaleDateString()}<br/>
+            <tr class="group hover:bg-blue-50/40 transition-colors ${item.status === 'NEW' ? 'bg-blue-50/10' : ''}">
+                <td class="p-8 align-top font-mono text-xs">
+                    <div class="mb-1">${new Date(item.created_at).toLocaleDateString()}</div>
                     <span class="text-gray-400">${new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </td>
-                <td class="p-6 align-top">
-                    <div class="font-bold text-studio-dark">${escapeHtml(item.name)}</div>
+                <td class="p-8 align-top">
+                    <div class="font-bold text-studio-dark text-base mb-1">${escapeHtml(item.name)}</div>
                     <div class="text-xs text-gray-500">${escapeHtml(item.email)}</div>
                 </td>
-                <td class="p-6 align-top">
-                    <span class="px-2 py-1 bg-gray-100 rounded text-[10px] font-bold uppercase">${escapeHtml(item.project_type || 'General')}</span>
+                <td class="p-8 align-top">
+                    <span class="px-3 py-1.5 bg-gray-100 rounded-md text-[10px] font-bold uppercase tracking-wider">${escapeHtml(item.project_type || 'General')}</span>
                 </td>
-                <td class="p-6 align-top text-gray-600 leading-relaxed max-w-xs">
-                    <p class="${item.status === 'NEW' ? 'font-medium text-studio-dark' : 'font-light'}">${escapeHtml(item.message)}</p>
+                <td class="p-8 align-top text-gray-600 leading-relaxed max-w-md">
+                    <p class="${item.status === 'NEW' ? 'font-medium text-studio-dark' : 'font-light'} text-sm">${escapeHtml(item.message)}</p>
                 </td>
-                <td class="p-6 align-top text-right space-x-2">
+                <td class="p-8 align-top text-right space-x-3">
                     ${item.status === 'NEW' ? `
-                        <button onclick="updateStatus('${item.id}', 'READ')" class="p-2 text-studio-mint hover:bg-studio-mint/10 rounded-full transition-all" title="Mark as Read">
+                        <button onclick="updateStatus('${item.id}', 'READ')" class="p-2.5 text-studio-mint hover:bg-studio-mint/10 rounded-full transition-all" title="Mark as Read">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </button>
                     ` : ''}
-                    <button onclick="deleteInquiry('${item.id}')" class="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
+                    <button onclick="deleteInquiry('${item.id}')" class="p-2.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="1.5"/></svg>
                     </button>
                 </td>
