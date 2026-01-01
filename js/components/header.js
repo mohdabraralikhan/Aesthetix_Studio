@@ -19,7 +19,7 @@ export function createHeader() {
 
   nav.innerHTML = `
     <div class="flex items-center justify-between px-6 py-4 lg:px-12 lg:py-5">
-      <button class="flex items-center gap-2 cursor-pointer group p-2 -m-2 rounded focus:outline-none" onclick="window.location.href='/'" aria-label="Aesthetix Studio - Home">
+      <button class="flex items-center gap-2 cursor-pointer group p-2 -m-2 rounded focus:outline-none" onclick="window.location.href='./index.html'" aria-label="Aesthetix Studio - Home">
         <div class="w-4 h-4 bg-studio-blue transform group-hover:rotate-45 transition-transform duration-300"></div>
         <span class="font-display font-bold text-xl tracking-tight uppercase">Aesthetix<span class="font-light">studio</span></span>
       </button>

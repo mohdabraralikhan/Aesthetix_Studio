@@ -39,7 +39,7 @@ export function createFooter() {
           <div>
             <h4 class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-6">Legal</h4>
             <ul class="space-y-3 text-sm font-medium text-studio-dark list-none p-0">
-              <li><a href="/sitemap.xml" class="hover:text-studio-blue transition-colors">Sitemap</a></li>
+              <li><a href="./sitemap.xml" class="hover:text-studio-blue transition-colors">Sitemap</a></li>
               <li><a href="#" class="hover:text-studio-blue transition-colors">Privacy Policy</a></li>
               <li><a href="#" class="hover:text-studio-blue transition-colors">Terms</a></li>
             </ul>

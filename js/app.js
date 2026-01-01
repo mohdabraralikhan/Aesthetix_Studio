@@ -109,8 +109,8 @@ function createHeroSection() {
         <!-- Right Visual -->
         <div class="lg:col-span-5 relative bg-gray-100 min-h-[50vh] lg:min-h-screen border-l border-gray-200">
             <img
-                src="/images/hero.webp"
-                srcset="/images/hero-mobile.webp 800w, /images/hero.webp 1920w"
+                src="./images/hero.webp"
+                srcset="./images/hero-mobile.webp 800w, ./images/hero.webp 1920w"
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 alt="Abstract Architectural Form"
                 loading="eager"
@@ -239,10 +239,10 @@ function createWorkSection() {
     section.className = 'py-24 lg:py-32 bg-white';
 
     const projects = [
-        { id: 1, title: 'Minimal SaaS Dashboard', category: 'Analytics UI — Glassmorphism UI', year: '2025', image: '/images/project-saas-dashboard.webp', color: 'bg-studio-blue', size: 'large' },
-        { id: 2, title: 'Creative Agency Website', category: 'Editorial Design — Motion UI', year: '2024', image: '/images/project-creative-agency.webp', color: 'bg-studio-red', size: 'tall' },
-        { id: 3, title: 'E-Commerce Product Page', category: 'Retail Experience', year: '2024', image: '/images/project-ecommerce.webp', color: 'bg-studio-mint', size: 'normal' },
-        { id: 4, title: 'Business Consulting Platform', category: 'Corporate Identity', year: '2024', image: '/images/project-consulting.png', color: 'bg-studio-yellow', size: 'normal' }
+        { id: 1, title: 'Minimal SaaS Dashboard', category: 'Analytics UI — Glassmorphism UI', year: '2025', image: './images/project-saas-dashboard.webp', color: 'bg-studio-blue', size: 'large' },
+        { id: 2, title: 'Creative Agency Website', category: 'Editorial Design — Motion UI', year: '2024', image: './images/project-creative-agency.webp', color: 'bg-studio-red', size: 'tall' },
+        { id: 3, title: 'E-Commerce Product Page', category: 'Retail Experience', year: '2024', image: './images/project-ecommerce.webp', color: 'bg-studio-mint', size: 'normal' },
+        { id: 4, title: 'Business Consulting Platform', category: 'Corporate Identity', year: '2024', image: './images/project-consulting.png', color: 'bg-studio-yellow', size: 'normal' }
     ];
 
     section.innerHTML = `
@@ -342,7 +342,7 @@ function createAboutSection() {
             <div class="lg:col-span-6 relative h-full min-h-[400px]">
                 <div class="absolute inset-0 bg-gray-200">
                     <img
-                        src="/images/about.webp"
+                        src="./images/about.webp"
                         alt="Studio Atmosphere"
                         loading="lazy"
                         decoding="async"
