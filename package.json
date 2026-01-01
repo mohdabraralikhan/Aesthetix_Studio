@@ -1,0 +1,16 @@
+{
+  "name": "aesthetixstudio",
+  "version": "1.0.0",
+  "description": "Premium UI/UX Design and Web Development Studio",
+  "main": "js/app.js",
+  "scripts": {
+    "build:js": "esbuild js/app.js --bundle --minify --outfile=dist/js/app.min.js --format=esm",
+    "build:admin": "esbuild js/admin.js --bundle --minify --outfile=dist/js/admin.min.js --format=esm",
+    "build:css": "esbuild css/styles.css --minify --outfile=dist/css/styles.min.css",
+    "build": "npm run build:js && npm run build:admin && npm run build:css",
+    "watch": "esbuild js/app.js --bundle --outfile=dist/js/app.min.js --format=esm --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
+  }
+}

@@ -1,8 +1,8 @@
 // Main Application Entry Point
-import { createHeader, initializeHeader } from './components/header.js';
-import { createFooter, initializeFooter } from './components/footer.js';
-import { createContactSection, initializeContactForm } from './sections/contact.js';
-import { Icons } from './components/icons.js';
+import { createHeader, initializeHeader } from './components/header.js?v=1.1';
+import { createFooter, initializeFooter } from './components/footer.js?v=1.1';
+import { createContactSection, initializeContactForm } from './sections/contact.js?v=1.1';
+import { Icons } from './components/icons.js?v=1.1';
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {

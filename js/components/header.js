@@ -10,11 +10,11 @@ export function createHeader() {
   nav.setAttribute('aria-label', 'Main navigation');
 
   const navItems = [
-    { id: 'work', label: 'Work', path: '/work' },
-    { id: 'services', label: 'Services', path: '/services' },
-    { id: 'process', label: 'Process', path: '/process' },
-    { id: 'about', label: 'About', path: '/about' },
-    { id: 'contact', label: 'Contact', path: '/contact' }
+    { id: 'work', label: 'Work', path: '#work' },
+    { id: 'services', label: 'Services', path: '#services' },
+    { id: 'process', label: 'Process', path: '#process' },
+    { id: 'about', label: 'About', path: '#about' },
+    { id: 'contact', label: 'Contact', path: '#contact' }
   ];
 
   nav.innerHTML = `
@@ -58,7 +58,8 @@ export function createHeader() {
     <div class="flex flex-col items-center justify-center h-full gap-8">
        ${navItems.map((item, index) => `
         <a href="${item.path}" 
-           class="text-4xl font-display font-light transition-colors duration-300 p-2 rounded focus:outline-none hover:text-studio-blue"
+           class="nav-link text-4xl font-display font-light transition-colors duration-300 p-2 rounded focus:outline-none hover:text-studio-blue"
+           data-path="${item.path}"
            style="transition-delay: ${index * 50}ms">
            <span class="block text-center">${item.label}</span>
         </a>
@@ -110,17 +111,27 @@ export function initializeHeader() {
     });
   }
 
-  // Smooth Scroll Logic for Desktop Links
+  // Smooth Scroll Logic for All Links (Desktop & Mobile)
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
       const path = link.getAttribute('data-path');
-      const id = path.substring(1); // remove /
-      const element = document.getElementById(id);
+      if (path && path.startsWith('#')) {
+        const id = path.substring(1);
+        const element = document.getElementById(id);
 
-      // If we are on home page and target is a section
-      if (element) {
-        e.preventDefault();
-        window.scrollToSection(id);
+        if (element) {
+          e.preventDefault();
+          window.scrollToSection(id);
+
+          // Close mobile menu if open
+          if (isOpen && overlay && toggleBtn) {
+            isOpen = false;
+            overlay.classList.add('translate-x-full');
+            overlay.classList.remove('translate-x-0');
+            toggleBtn.innerHTML = Icons.Menu();
+            document.body.style.overflow = '';
+          }
+        }
       }
     });
   });
