@@ -242,7 +242,7 @@ function createWorkSection() {
         { id: 1, title: 'Minimal SaaS Dashboard', category: 'Analytics UI — Glassmorphism UI', year: '2025', image: './images/project-saas-dashboard.webp', color: 'bg-studio-blue', size: 'large' },
         { id: 2, title: 'Creative Agency Website', category: 'Editorial Design — Motion UI', year: '2024', image: './images/project-creative-agency.webp', color: 'bg-studio-red', size: 'tall' },
         { id: 3, title: 'E-Commerce Product Page', category: 'Retail Experience', year: '2024', image: './images/project-ecommerce.webp', color: 'bg-studio-mint', size: 'normal' },
-        { id: 4, title: 'Business Consulting Platform', category: 'Corporate Identity', year: '2024', image: './images/project-consulting.png', color: 'bg-studio-yellow', size: 'normal' }
+        { id: 4, title: 'Business Consulting Platform', category: 'Corporate Identity', year: '2024', image: './images/project-consulting.webp', color: 'bg-studio-yellow', size: 'normal' }
     ];
 
     section.innerHTML = `
