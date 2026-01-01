@@ -159,6 +159,18 @@ export function initializeContactForm() {
     };
 
     try {
+      // 1. Ensure Supabase is loaded dynamically
+      if (!window.supabase) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Failed to load database service.'));
+          document.head.appendChild(script);
+        });
+      }
+
       // Check if Supabase is configured
       if (!SUPABASE_CONFIG.url || SUPABASE_CONFIG.url === 'YOUR_SUPABASE_URL') {
         throw new Error('Supabase is not configured. Please update js/config.js with your Supabase credentials.');
