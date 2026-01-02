@@ -29,6 +29,7 @@ function initializeApp() {
     // Add sections (Order based on Home.tsx)
     main.appendChild(createHeroSection());
     main.appendChild(createIntroSection());
+    main.appendChild(createProblemSolutionSection());
     main.appendChild(createServicesSection());
     main.appendChild(createProcessSection());
     main.appendChild(createWorkSection());
@@ -86,23 +87,22 @@ function createHeroSection() {
                 <span class="text-studio-blue font-mono text-xs uppercase tracking-widest">Aesthetixstudio</span>
             </div>
 
-            <h1 class="font-display font-medium text-5xl lg:text-7xl xl:text-8xl leading-[1.05] mb-8 text-studio-dark tracking-tight">
-                Design-Forward <br />
-                Development <span class="text-gray-400 italic font-light">Studio.</span>
+            <h1 class="font-display font-medium text-4xl lg:text-7xl xl:text-8xl leading-[1.05] mb-8 text-studio-dark tracking-tight">
+                Websites That Get <br />
+                Local Businesses <span class="text-gray-400 italic font-light">More Leads.</span>
             </h1>
 
             <p class="font-sans font-light text-lg lg:text-xl text-studio-gray max-w-lg leading-relaxed mb-12">
-                Aesthetixstudio is a design-forward development studio building modern websites and UI systems for brands that value precision, clarity, and visual identity.
+                Get a professional business website in 7 days — pay only after you approve the design. Based in Falaknuma, Hyderabad.
             </p>
 
             <div class="flex flex-row flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-6">
-                <button onclick="window.scrollToSection('work')" class="group flex items-center gap-3 text-studio-dark hover:text-studio-blue transition-colors duration-300">
-                    <span class="uppercase tracking-widest text-sm font-medium border-b border-studio-dark group-hover:border-studio-blue pb-1">View Work</span>
-                    <span class="w-4 h-4 transform group-hover:translate-y-1 transition-transform">${Icons.ArrowDown()}</span>
-                </button>
-                <button onclick="window.scrollToSection('contact')" class="px-8 py-3 border border-gray-300 text-sm uppercase tracking-widest hover:border-studio-dark hover:bg-studio-dark hover:text-white transition-all duration-300">
-                    Start a Project
-                </button>
+                <a href="https://wa.me/918499908716" class="px-8 py-3 bg-[#25D366] text-white text-sm uppercase tracking-widest hover:opacity-90 transition-all duration-300 flex items-center gap-2">
+                    ${Icons.WhatsApp ? Icons.WhatsApp() : '<span class="w-4 h-4"></span>'} WhatsApp Now
+                </a>
+                <a href="tel:+918499908716" class="px-8 py-3 border border-gray-300 text-sm uppercase tracking-widest hover:border-studio-dark hover:bg-studio-dark hover:text-white transition-all duration-300">
+                    Call: 8499908716
+                </a>
             </div>
         </div>
 

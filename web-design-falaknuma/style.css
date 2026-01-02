@@ -29,7 +29,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.1;
@@ -41,6 +43,12 @@ h1, h2, h3 {
   max-width: 800px;
   margin: 0 auto;
   padding: 0 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1100px;
+  }
 }
 
 section {
@@ -93,7 +101,8 @@ section {
 }
 
 .btn-primary {
-  background-color: #25D366; /* WhatsApp Green */
+  background-color: #25D366;
+  /* WhatsApp Green */
   color: white;
 }
 
@@ -218,17 +227,171 @@ section {
 }
 
 /* FAQ */
+.faq {
+  background: #f9fafb;
+}
+
 .faq h2 {
   text-align: center;
   margin-bottom: 3rem;
 }
 
-.faq-item {
-  margin-bottom: 2rem;
+/* Pricing Section */
+.pricing-header {
+  text-align: center;
+  margin-bottom: 4rem;
 }
 
-.faq-item h3 {
+.pricing-grid {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.pricing-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.pricing-card.featured {
+  border: 2px solid var(--color-studio-blue);
+  position: relative;
+}
+
+.pricing-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.pricing-card .price {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-studio-blue);
+  margin: 1rem 0;
+  white-space: nowrap;
+}
+
+.pricing-card .includes-head {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.pricing-card ul {
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+.pricing-card li {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 0.9375rem;
+}
+
+.pricing-card li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--color-studio-blue);
+}
+
+.pricing-card .best-for {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+}
+
+/* Hosting & Domain */
+.hosting-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.hosting-item {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.hosting-item h3 {
   font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.hosting-item .price {
+  font-weight: 700;
+  color: var(--color-studio-blue);
+}
+
+/* Payment Info */
+.payment-flow {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.payment-flow ol {
+  display: grid;
+  gap: 1rem;
+  counter-reset: step;
+  list-style: none;
+}
+
+.payment-flow li {
+  padding-left: 3rem;
+  position: relative;
+}
+
+.payment-flow li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2rem;
+  height: 2rem;
+  background: var(--color-studio-blue);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.important-box {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  margin-top: 2rem;
+}
+
+.important-box h3 {
+  color: #92400e;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.important-box ul li {
+  font-size: 0.875rem;
+  color: #92400e;
   margin-bottom: 0.5rem;
 }
 
@@ -258,13 +421,21 @@ footer {
     flex-direction: row;
     justify-content: center;
   }
-  
+
   .hero h1 {
     font-size: 3.5rem;
   }
-  
-  .service-grid {
-    grid-template-columns: 1fr 1fr;
+
+  .service-grid,
+  .pricing-grid,
+  .hosting-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pricing-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
