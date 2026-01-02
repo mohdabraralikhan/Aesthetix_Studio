@@ -1,0 +1,275 @@
+/* ============================================
+   AESTHETIX STUDIO - LANDING PAGE CSS
+   ============================================ */
+
+:root {
+  --color-studio-base: #F6F7FB;
+  --color-studio-dark: #1A1A1C;
+  --color-studio-blue: #2153F6;
+  --color-studio-yellow: #FFC93C;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-studio-base);
+  color: var(--color-studio-dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-studio-dark);
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+section {
+  padding: 4rem 0;
+}
+
+/* Hero Section */
+.hero {
+  padding: 5rem 0 4rem;
+  text-align: center;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-studio-dark);
+}
+
+.hero p {
+  font-size: 1.25rem;
+  color: var(--color-gray-600);
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 2rem;
+  border-radius: 99px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  text-decoration: none;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background-color: #25D366; /* WhatsApp Green */
+  color: white;
+}
+
+.btn-secondary {
+  background-color: var(--color-studio-blue);
+  color: white;
+}
+
+/* Trust Section */
+.trust {
+  background: #f9fafb;
+}
+
+.trust h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.trust-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-xl);
+}
+
+.trust-steps {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.trust-step {
+  padding-left: 2rem;
+  position: relative;
+}
+
+.trust-step::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-studio-blue);
+  font-weight: bold;
+}
+
+/* Services */
+.services h2 {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.service-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.service-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.service-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Process */
+.process {
+  background: #1A1A1C;
+  color: white;
+}
+
+.process h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.process-step {
+  margin-bottom: 2.5rem;
+  padding-left: 3.5rem;
+  position: relative;
+}
+
+.process-number {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--color-studio-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Local Proof */
+.local-proof {
+  background: var(--color-studio-yellow);
+}
+
+.local-proof h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.local-list {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+.local-list li {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* FAQ */
+.faq h2 {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.faq-item {
+  margin-bottom: 2rem;
+}
+
+.faq-item h3 {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Header/Footer Branding */
+header {
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+footer {
+  padding: 4rem 0;
+  background: #f9fafb;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .cta-group {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .hero h1 {
+    font-size: 3.5rem;
+  }
+  
+  .service-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2.25rem;
+  }
+}
